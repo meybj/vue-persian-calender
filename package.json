@@ -1,5 +1,5 @@
 {
-  "name": "@meybj/vue-persian-calendar",
+  "name": "@meybj/vue-persian-calender",
   "description": "Modern Persian (Jalali) and Gregorian DatePicker & Date Engine for Vue 3.4/3.5+ and Nuxt 3/4+",
   "version": "2.0.2",
   "author": "meybj",
@@ -40,29 +40,47 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/meybj/vue-persian-calendar.git"
+    "url": "https://github.com/meybj/vue-persian-calender.git"
   },
   "bugs": {
-    "url": "https://github.com/meybj/vue-persian-calendar/issues"
+    "url": "https://github.com/meybj/vue-persian-calender/issues"
   },
-  "homepage": "https://github.com/meybj/vue-persian-calendar#readme",
+  "homepage": "https://github.com/meybj/vue-persian-calender#readme",
   "keywords": [
-    "vue",
-    "vue3",
-    "vue 3.5",
-    "nuxt",
-    "nuxt4",
-    "persian",
-    "jalali",
-    "shamsi",
-    "gregorian",
-    "hijri",
-    "datepicker",
-    "persian-datepicker",
-    "jalali-datepicker",
-    "persian-date",
-    "meybj"
-  ],
+      "vue",
+      "vuejs",
+      "vue3",
+      "vue-datepicker",
+      "vue3-datepicker",
+      "nuxt",
+      "nuxt3",
+      "nuxt4",
+      "nuxt-module",
+      "persian",
+      "farsi",
+      "jalali",
+      "shamsi",
+      "gregorian",
+      "hijri",
+      "calendar",
+      "datepicker",
+      "date-picker",
+      "persian-datepicker",
+      "jalali-datepicker",
+      "shamsi-datepicker",
+      "persian-calendar",
+      "jalali-calendar",
+      "shamsi-calendar",
+      "persian-date",
+      "jalali-to-gregorian",
+      "datetime-picker",
+      "range-picker",
+      "date-range-picker",
+      "time-picker",
+      "month-picker",
+      "inline-calendar",
+      "time-slots"
+    ],
   "peerDependencies": {
     "vue": ">=3.4.0"
   },
