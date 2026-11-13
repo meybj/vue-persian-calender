@@ -1,6 +1,5 @@
 import {
   defineNuxtModule,
-  createResolver,
   addImports,
   addComponent,
 } from '@nuxt/kit';
@@ -30,20 +29,25 @@ export default defineNuxtModule<DatePickerNuxtOptions>({
     composable: true,
     componentName: 'DatePicker',
   },
-  setup(options) {
-    const { resolve } = createResolver(import.meta.url);
+  setup(options, nuxt) {
+    const pkgName = '@meybj/vue-persian-calendar';
+
+    if (!nuxt.options.css.includes(`${pkgName}/style.css`)) {
+      nuxt.options.css.push(`${pkgName}/style.css`);
+    }
 
     if (options.composable) {
       addImports({
         name: 'usePersianDate',
         as: 'usePersianDate',
-        from: resolve('./runtime/composables/usePersianDate'),
+        from: pkgName,
       });
     }
 
     addComponent({
       name: options.componentName || 'DatePicker',
-      filePath: resolve('../components/DatePicker.vue'),
+      export: 'DatePicker',
+      filePath: pkgName,
     });
   },
 });

@@ -11,6 +11,12 @@ import {
 export type * from './components/utils/modules/types';
 export type * from './core/PersianDate';
 
+export function usePersianDate(
+  ...args: ConstructorParameters<typeof PersianDate>
+): PersianDate {
+  return new PersianDate(...args);
+}
+
 export {
   DatePicker,
   PersianDate,
