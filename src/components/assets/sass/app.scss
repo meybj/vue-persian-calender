@@ -1,0 +1,1613 @@
+@use '_variable' as *;
+
+@mixin scrollbar {
+  scrollbar-gutter: stable;
+  &::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 9999px;
+    background: var(--pdp-scrollbar-thumb-color);
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+@keyframes pdpDropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pdpModalFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes pdpSheetSlideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes pdpShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes pdpSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Color Presets (Zero-specificity so custom :styles or CSS vars always win)
+:where(.pdp.pdp-color-red) {
+  --pdp-primary-color: #e11d48;
+  --pdp-in-range-background: rgba(225, 29, 72, 0.12);
+  --pdp-day-selected-bg: #e11d48;
+  --pdp-button-bg: #e11d48;
+  --pdp-input-focus-ring: rgba(225, 29, 72, 0.15);
+}
+:where(.pdp.pdp-color-green) {
+  --pdp-primary-color: #059669;
+  --pdp-in-range-background: rgba(5, 150, 105, 0.12);
+  --pdp-day-selected-bg: #059669;
+  --pdp-button-bg: #059669;
+  --pdp-input-focus-ring: rgba(5, 150, 105, 0.15);
+}
+:where(.pdp.pdp-color-purple) {
+  --pdp-primary-color: #7c3aed;
+  --pdp-in-range-background: rgba(124, 58, 237, 0.12);
+  --pdp-day-selected-bg: #7c3aed;
+  --pdp-button-bg: #7c3aed;
+  --pdp-input-focus-ring: rgba(124, 58, 237, 0.15);
+}
+:where(.pdp.pdp-color-orange) {
+  --pdp-primary-color: #ea580c;
+  --pdp-in-range-background: rgba(234, 88, 12, 0.12);
+  --pdp-day-selected-bg: #ea580c;
+  --pdp-button-bg: #ea580c;
+  --pdp-input-focus-ring: rgba(234, 88, 12, 0.15);
+}
+:where(.pdp.pdp-color-pink) {
+  --pdp-primary-color: #db2777;
+  --pdp-in-range-background: rgba(219, 39, 119, 0.12);
+  --pdp-day-selected-bg: #db2777;
+  --pdp-button-bg: #db2777;
+  --pdp-input-focus-ring: rgba(219, 39, 119, 0.15);
+}
+:where(.pdp.pdp-color-gray) {
+  --pdp-primary-color: #475569;
+  --pdp-in-range-background: rgba(71, 85, 105, 0.12);
+  --pdp-day-selected-bg: #475569;
+  --pdp-button-bg: #475569;
+  --pdp-input-focus-ring: rgba(71, 85, 105, 0.15);
+}
+
+.pdp {
+  position: relative;
+  font-family: var(--pdp-font-family);
+  font-size: var(--pdp-font-size);
+  color: var(--pdp-text-color);
+  width: 100%;
+
+  * {
+    box-sizing: border-box;
+  }
+
+  .pdp-label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--pdp-text-color);
+  }
+
+  /* --- INPUT CONTAINER --- */
+  .pdp-group {
+    display: inline-flex;
+    align-items: center;
+    width: 100%;
+    min-height: var(--pdp-input-height);
+    background: var(--pdp-input-bg);
+    border: var(--pdp-input-border-width) solid var(--pdp-border-color);
+    border-radius: var(--pdp-radius);
+    padding: 0.25rem 0.5rem;
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    position: relative;
+
+    &:hover {
+      border-color: var(--pdp-input-hover-border-color);
+    }
+
+    &--focused {
+      border-color: var(--pdp-primary-color);
+      box-shadow: 0 0 0 3px var(--pdp-input-focus-ring);
+    }
+
+    &--error {
+      border-color: var(--pdp-error-color);
+      background: var(--pdp-error-bg);
+      animation: pdpShake 0.25s ease-in-out;
+
+      &.pdp-group--focused {
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+      }
+    }
+
+    &--success {
+      border-color: var(--pdp-success-color);
+      &.pdp-group--focused {
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+      }
+    }
+
+    &--readonly {
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    &--disabled {
+      opacity: 0.6;
+      background: var(--pdp-surface-color);
+      cursor: not-allowed;
+
+      &:hover {
+        border-color: var(--pdp-border-color);
+      }
+
+      .pdp-field,
+      .pdp-input,
+      .pdp-icon {
+        cursor: not-allowed !important;
+        pointer-events: none;
+        user-select: none;
+      }
+    }
+
+    .pdp-field {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      position: relative;
+      min-width: 0;
+      overflow: hidden;
+
+      &.is-active {
+        background: var(--pdp-surface-hover-color);
+        border-radius: 8px;
+      }
+    }
+
+    .pdp-input {
+      width: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      padding: var(--pdp-input-padding);
+      font-size: var(--pdp-font-size);
+      font-family: inherit;
+      color: var(--pdp-text-color);
+      min-width: 0;
+
+      &--readonly {
+        cursor: pointer;
+        user-select: none;
+        -webkit-user-select: none;
+        caret-color: transparent;
+      }
+
+      &::placeholder {
+        color: var(--pdp-muted-text-color);
+        opacity: 0.75;
+      }
+    }
+
+    .pdp-dual-separator {
+      color: var(--pdp-muted-text-color);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 0.4rem;
+      user-select: none;
+    }
+
+    .pdp-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      flex-shrink: 0;
+    }
+
+    .pdp-icon {
+      color: var(--pdp-muted-text-color);
+      padding: 0.3rem;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &.pdp-pointer {
+        cursor: pointer;
+        &:hover {
+          color: var(--pdp-primary-color);
+        }
+      }
+    }
+
+    .pdp-clear {
+      border: none;
+      background: var(--pdp-clear-background);
+      color: var(--pdp-muted-text-color);
+      cursor: pointer;
+      padding: 0.3rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover {
+        color: var(--pdp-error-color);
+        background: rgba(239, 68, 68, 0.12);
+      }
+    }
+
+    /* --- REAL SEGMENTED INPUT (YYYY / MM / DD) --- */
+    .pdp-segmented-field {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: var(--pdp-input-padding);
+      font-size: var(--pdp-font-size);
+      font-family: inherit;
+      color: var(--pdp-text-color);
+      user-select: none;
+      -webkit-user-select: none;
+      cursor: text;
+
+      /* Follow RTL / LTR alignment of the DatePicker */
+      &.is-rtl {
+        justify-content: flex-start; /* In dir="rtl", flex-start is the RIGHT side */
+      }
+      &.is-ltr {
+        justify-content: flex-start; /* In dir="ltr", flex-start is the LEFT side */
+      }
+
+      &.is-readonly {
+        cursor: pointer;
+      }
+
+      &.is-disabled {
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+
+      .pdp-seg-cluster {
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+        direction: ltr;
+        unicode-bidi: isolate;
+      }
+
+      .pdp-seg-part {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.14rem 0.3rem;
+        border-radius: 6px;
+        outline: none;
+        font-variant-numeric: tabular-nums;
+        font-weight: 600;
+        line-height: 1.2;
+        text-align: center;
+        transition:
+          background-color 0.12s ease,
+          color 0.12s ease,
+          box-shadow 0.12s ease;
+
+        &--year {
+          min-width: 2.55rem;
+        }
+        &--month,
+        &--day,
+        &--hour,
+        &--minute,
+        &--second {
+          min-width: 1.6rem;
+        }
+
+        &.is-placeholder {
+          color: var(--pdp-muted-text-color);
+          font-weight: 500;
+          opacity: 0.7;
+        }
+
+        &:hover:not(.is-active) {
+          background: var(--pdp-surface-hover-color);
+          color: var(--pdp-primary-color);
+        }
+
+        &.is-active {
+          background: var(--pdp-primary-color);
+          color: var(--pdp-day-selected-text-color);
+          font-weight: 700;
+          opacity: 1;
+          box-shadow: 0 1px 4px var(--pdp-input-focus-ring);
+        }
+      }
+
+      .pdp-seg-sep {
+        color: var(--pdp-muted-text-color);
+        padding: 0 0.08rem;
+        font-weight: 700;
+        opacity: 0.55;
+        pointer-events: none;
+
+        &.is-space {
+          width: 0.45rem;
+        }
+      }
+    }
+  }
+
+  .pdp-error-message {
+    margin: 0.3rem 0 0 0;
+    font-size: 0.78rem;
+    color: var(--pdp-error-color);
+    font-weight: 500;
+  }
+
+  &.rtl {
+    direction: rtl;
+    text-align: right;
+  }
+
+  &.ltr {
+    direction: ltr;
+    text-align: left;
+  }
+
+  /* --- MODAL DIALOG & OVERLAY --- */
+  .pdp-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: var(--pdp-z-index);
+    background: var(--pdp-overlay-color);
+    backdrop-filter: blur(4px);
+  }
+
+  &.pdp-modal {
+    .pdp-picker {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      right: auto;
+      bottom: auto;
+      margin: 0;
+      transform: translate(-50%, -50%);
+      animation: pdpModalFadeIn 0.15s ease-out;
+      z-index: calc(var(--pdp-z-index) + 1);
+
+      &::after {
+        display: none;
+      }
+    }
+  }
+
+  /* --- POPOVER CARD --- */
+  .pdp-picker {
+    display: flex;
+    position: absolute;
+    color: var(--pdp-text-color);
+    background: var(--pdp-background);
+    border: 1px solid var(--pdp-border-color);
+    border-radius: var(--pdp-radius);
+    box-shadow: var(--pdp-main-box-shadow);
+    z-index: calc(var(--pdp-z-index) + 1);
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    animation: pdpDropdownFadeIn 0.15s ease-out;
+    width: max-content;
+    max-width: 96vw;
+    outline: none;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 100%;
+      border: 6px solid transparent;
+      border-bottom-color: var(--pdp-background);
+    }
+
+    &.pdp-top {
+      bottom: calc(100% + 0.5rem);
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+      &::after {
+        bottom: unset;
+        top: 100%;
+        border-bottom-color: transparent;
+        border-top-color: var(--pdp-background);
+      }
+    }
+
+    &.pdp-right {
+      right: 0;
+      left: unset;
+      &::after {
+        right: 1.2rem;
+        left: unset;
+      }
+    }
+
+    &.pdp-left {
+      left: 0;
+      right: unset;
+      &::after {
+        left: 1.2rem;
+        right: unset;
+      }
+    }
+
+    &--inline {
+      position: relative;
+      margin-top: 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      z-index: 1;
+      &::after {
+        display: none;
+      }
+    }
+
+    &--teleported {
+      &::after {
+        display: none;
+      }
+    }
+
+    &--sheet {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      top: auto;
+      width: 100%;
+      max-width: 100vw;
+      margin: 0;
+      border-radius: 20px 20px 0 0;
+      padding: 0.5rem 1rem 1.25rem 1rem;
+      animation: pdpSheetSlideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      justify-content: center;
+
+      &::after {
+        display: none;
+      }
+
+      .pdp-sheet-handle-bar {
+        display: flex;
+        justify-content: center;
+        padding: 0.25rem 0 0.6rem 0;
+        cursor: grab;
+
+        .pdp-sheet-pill {
+          width: 40px;
+          height: 4px;
+          background: var(--pdp-scrollbar-thumb-color);
+          border-radius: 9999px;
+        }
+      }
+    }
+
+    /* --- ASYNC LOADING OVERLAY --- */
+    .pdp-loading-overlay {
+      position: absolute;
+      inset: 0;
+      background: var(--pdp-loading-overlay-bg);
+      backdrop-filter: blur(2px);
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--pdp-radius);
+
+      .pdp-spinner {
+        width: 28px;
+        height: 28px;
+        border: 3px solid var(--pdp-border-color);
+        border-top-color: var(--pdp-primary-color);
+        border-radius: 50%;
+        animation: pdpSpin 0.7s linear infinite;
+      }
+    }
+
+    /* --- LIVE RANGE DURATION PILL --- */
+    .pdp-range-duration-bar {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 0.45rem;
+
+      .pdp-duration-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        background: var(--pdp-duration-pill-bg, var(--pdp-in-range-background));
+        color: var(--pdp-duration-pill-color, var(--pdp-primary-color));
+        font-size: 0.76rem;
+        font-weight: 700;
+        padding: 0.22rem 0.7rem;
+        border-radius: 9999px;
+        transition: all 0.15s ease;
+
+        &--invalid {
+          background: var(--pdp-error-bg);
+          color: var(--pdp-error-color);
+        }
+      }
+    }
+
+    /* --- DATETIME TABS --- */
+    .pdp-segmented-control {
+      display: flex;
+      background: var(--pdp-surface-hover-color);
+      border-radius: 8px;
+      padding: 0.2rem;
+      margin-bottom: 0.6rem;
+      gap: 0.25rem;
+
+      .pdp-segment-btn {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        padding: 0.35rem 0.6rem;
+        border: none;
+        background: transparent;
+        font-size: 0.82rem;
+        font-weight: 500;
+        color: var(--pdp-muted-text-color);
+        border-radius: 6px;
+        cursor: pointer;
+
+        &.active {
+          background: var(--pdp-background);
+          color: var(--pdp-primary-color);
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+          font-weight: 600;
+        }
+
+        .pdp-time-pill {
+          background: var(--pdp-surface-color);
+          color: var(--pdp-text-color);
+          padding: 0.1rem 0.35rem;
+          border-radius: 4px;
+          font-size: 0.75rem;
+          font-family: monospace;
+        }
+      }
+    }
+
+    /* --- MULTIPLE SELECTION TRAY (Clean Wrap Grid) --- */
+    .pdp-selected-tray {
+      margin-top: 0.5rem;
+      padding: 0.45rem 0.5rem;
+      background: var(--pdp-surface-color);
+      border: 1px solid var(--pdp-border-color);
+      border-radius: 8px;
+      width: 265px;
+      min-width: 100%;
+
+      &-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.35rem;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--pdp-muted-text-color);
+
+        .pdp-tray-clear-btn {
+          border: none;
+          background: transparent;
+          color: var(--pdp-error-color);
+          font-size: 0.72rem;
+          font-weight: 600;
+          padding: 0.1rem 0.3rem;
+          border-radius: 4px;
+          cursor: pointer;
+
+          &:hover {
+            background: rgba(239, 68, 68, 0.1);
+          }
+        }
+      }
+
+      .pdp-selected-tags-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        max-height: 82px;
+        overflow-y: auto;
+        padding-inline-end: 2px;
+        @include scrollbar;
+      }
+
+      .pdp-tag-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        background: var(--pdp-background);
+        border: 1px solid var(--pdp-border-color);
+        color: var(--pdp-text-color);
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 0.18rem 0.48rem;
+        border-radius: 6px;
+        white-space: nowrap;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+        transition: border-color 0.15s ease;
+
+        &:hover {
+          border-color: var(--pdp-primary-color);
+        }
+
+        .pdp-tag-remove {
+          border: none;
+          background: var(--pdp-surface-hover-color);
+          color: var(--pdp-muted-text-color);
+          width: 14px;
+          height: 14px;
+          border-radius: 50%;
+          font-size: 0.58rem;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0;
+          cursor: pointer;
+          transition: all 0.15s ease;
+
+          &:hover {
+            background: var(--pdp-error-color);
+            color: #ffffff;
+          }
+        }
+      }
+    }
+
+    /* --- OVERLAYS FOR YEARS, DECADES, MONTHS & QUARTERS --- */
+    .pdp-select-month,
+    .pdp-select-year,
+    .pdp-select-quarter {
+      position: absolute;
+      inset: 2.5rem 0 0 0;
+      background: var(--pdp-background);
+      z-index: 20;
+      overflow-y: auto;
+      border-radius: 8px;
+      border: 1px solid var(--pdp-border-color);
+      padding: 0.5rem;
+      margin: 0;
+      list-style: none;
+      @include scrollbar;
+    }
+
+    .pdp-select-month,
+    .pdp-select-year {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.4rem;
+
+      li {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 2.5rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.83rem;
+        color: var(--pdp-text-color);
+
+        &:hover:not(.disabled) {
+          background: var(--pdp-surface-hover-color);
+          color: var(--pdp-primary-color);
+        }
+
+        &.selected {
+          background: var(--pdp-primary-color);
+          color: var(--pdp-day-selected-text-color);
+          font-weight: 600;
+        }
+
+        &.disabled {
+          opacity: var(--pdp-disabled-opacity);
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    .pdp-scrubber-bar {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.4rem;
+      margin-bottom: 0.45rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 1px solid var(--pdp-border-color);
+
+      button {
+        border: none;
+        background: var(--pdp-surface-hover-color);
+        color: var(--pdp-text-color);
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.25rem 0.6rem;
+        border-radius: 6px;
+        cursor: pointer;
+
+        &:hover {
+          background: var(--pdp-in-range-background);
+          color: var(--pdp-primary-color);
+        }
+      }
+    }
+
+    .pdp-select-quarter {
+      display: flex;
+      flex-direction: column;
+
+      .pdp-quarter-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+        flex: 1;
+
+        .pdp-quarter-card {
+          border: 1px solid var(--pdp-border-color);
+          background: var(--pdp-surface-color);
+          border-radius: 8px;
+          padding: 0.5rem;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 0.2rem;
+          cursor: pointer;
+          transition: all 0.15s ease;
+
+          &:hover {
+            border-color: var(--pdp-primary-color);
+            background: var(--pdp-in-range-background);
+          }
+
+          .pdp-quarter-badge {
+            background: var(--pdp-primary-color);
+            color: var(--pdp-day-selected-text-color);
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 0.1rem 0.4rem;
+            border-radius: 9999px;
+          }
+
+          strong {
+            font-size: 0.78rem;
+            color: var(--pdp-text-color);
+          }
+
+          small {
+            font-size: 0.7rem;
+            color: var(--pdp-muted-text-color);
+          }
+        }
+      }
+
+      .pdp-fiscal-year-btn {
+        margin-top: 0.5rem;
+        width: 100%;
+        border: 1px dashed var(--pdp-primary-color);
+        background: var(--pdp-in-range-background);
+        color: var(--pdp-primary-color);
+        font-weight: 700;
+        font-size: 0.78rem;
+        padding: 0.45rem;
+        border-radius: 8px;
+        cursor: pointer;
+
+        &:hover {
+          background: var(--pdp-primary-color);
+          color: var(--pdp-day-selected-text-color);
+        }
+      }
+    }
+
+    /* --- STABLE BODY HEIGHT --- */
+    .pdp-body-wrapper {
+      min-height: 265px;
+      position: relative;
+    }
+
+    .pdp-columns-wrapper {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .pdp-column-box {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* --- INDEPENDENT HEADER PER COLUMN --- */
+    .pdp-header {
+      margin-bottom: 0.4rem;
+      background: var(--pdp-header-bg);
+
+      .bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 2.2rem;
+
+        .pdp-nav-title {
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+
+          button {
+            border: none;
+            background: var(--pdp-surface-color);
+            color: var(--pdp-header-text-color);
+            font-size: 0.86rem;
+            font-weight: 600;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+
+            &:hover {
+              background: var(--pdp-surface-hover-color);
+              color: var(--pdp-primary-color);
+            }
+
+            &.pdp-quarter-btn {
+              background: var(--pdp-in-range-background);
+              color: var(--pdp-primary-color);
+              font-size: 0.72rem;
+              padding: 0.15rem 0.45rem;
+            }
+          }
+        }
+
+        .pdp-arrow {
+          border: none;
+          background: transparent;
+          color: var(--pdp-muted-text-color);
+          width: 1.8rem;
+          height: 1.8rem;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+
+          &:hover:not(.disabled) {
+            background: var(--pdp-surface-hover-color);
+            color: var(--pdp-primary-color);
+          }
+        }
+
+        .pdp-arrow-placeholder {
+          width: 1.8rem;
+          height: 1.8rem;
+        }
+      }
+    }
+
+    /* --- CALENDAR DAYS & WEEK NUMBERS --- */
+    .pdp-column {
+      .pdp-week {
+        display: grid;
+        grid-template-columns: repeat(7, var(--pdp-day-dimensions));
+        gap: 2px;
+        margin-bottom: 0.25rem;
+        background: var(--pdp-weekday-bg);
+
+        .pdp-weekday {
+          width: var(--pdp-day-dimensions);
+          height: 1.6rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 0.75rem;
+          font-weight: 600;
+          color: var(--pdp-weekday-text-color);
+        }
+      }
+
+      .pdp-days {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+
+        .pdp-week-row {
+          display: grid;
+          grid-template-columns: repeat(7, var(--pdp-day-dimensions));
+          gap: 2px;
+        }
+
+        .pdp-day {
+          position: relative;
+          width: var(--pdp-day-dimensions);
+          height: var(--pdp-day-dimensions);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          font-size: 0.82rem;
+          line-height: 1;
+          border-radius: 8px;
+          cursor: pointer;
+          user-select: none;
+          color: var(--pdp-day-text-color);
+
+          &.empty {
+            visibility: hidden;
+            pointer-events: none;
+          }
+
+          &.friday,
+          &.holiday {
+            color: var(--pdp-holiday-color);
+          }
+
+          &.holiday {
+            font-weight: 600;
+          }
+
+          &.focused {
+            outline: 2px solid var(--pdp-primary-color);
+            outline-offset: -2px;
+          }
+
+          &.has-sub {
+            padding-bottom: 0.15rem;
+            .pdp-day-main {
+              font-size: 0.78rem;
+            }
+            .pdp-day-sub {
+              font-size: 0.54rem;
+              opacity: 0.65;
+              margin-top: 2px;
+            }
+          }
+
+          .pdp-day-badge {
+            font-size: 0.54rem;
+            font-weight: 700;
+            color: var(--pdp-badge-color);
+            margin-top: 2px;
+          }
+
+          .pdp-event-dots {
+            position: absolute;
+            bottom: 3px;
+            display: flex;
+            gap: 2px;
+
+            .pdp-event-dot {
+              width: 4px;
+              height: 4px;
+              border-radius: 50%;
+            }
+          }
+
+          &:hover:not(.disabled):not(.selected):not(.start-range):not(
+              .end-range
+            ) {
+            background: var(--pdp-day-hover-bg);
+          }
+
+          &.today {
+            font-weight: 700;
+            border: 1.5px solid var(--pdp-primary-color);
+          }
+
+          &.selected {
+            background: var(--pdp-day-selected-bg);
+            color: var(--pdp-day-selected-text-color);
+            font-weight: 600;
+            .pdp-day-badge {
+              color: var(--pdp-day-selected-text-color);
+            }
+          }
+
+          &.start-range {
+            border-start-start-radius: 9999px;
+            border-end-start-radius: 9999px;
+            border-start-end-radius: 0;
+            border-end-end-radius: 0;
+            background: var(--pdp-day-selected-bg);
+            color: var(--pdp-day-selected-text-color);
+            .pdp-day-badge {
+              color: var(--pdp-day-selected-text-color);
+            }
+          }
+
+          &.end-range {
+            border-start-end-radius: 9999px;
+            border-end-end-radius: 9999px;
+            border-start-start-radius: 0;
+            border-end-start-radius: 0;
+            background: var(--pdp-day-selected-bg);
+            color: var(--pdp-day-selected-text-color);
+            .pdp-day-badge {
+              color: var(--pdp-day-selected-text-color);
+            }
+          }
+
+          &.in-range {
+            background: var(--pdp-in-range-background);
+            color: var(--pdp-primary-color);
+            border-radius: 0;
+          }
+
+          &.disabled {
+            opacity: var(--pdp-disabled-opacity);
+            cursor: not-allowed;
+            pointer-events: none;
+          }
+        }
+      }
+
+      &.has-week-nums {
+        .pdp-week,
+        .pdp-days .pdp-week-row {
+          grid-template-columns: 1.6rem repeat(7, var(--pdp-day-dimensions));
+        }
+
+        .pdp-week-num-head,
+        .pdp-week-num {
+          width: 1.6rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 0.68rem;
+          color: var(--pdp-muted-text-color);
+          border-inline-end: 1px dashed var(--pdp-border-color);
+          user-select: none;
+        }
+      }
+    }
+
+    /* --- TIME VIEW COLUMNS --- */
+    .pdp-time-container {
+      height: 265px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      .pdp-time-columns {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        height: 100%;
+
+        .time-divider {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: var(--pdp-muted-text-color);
+          align-self: center;
+        }
+
+        .time-col {
+          display: flex;
+          flex-direction: column;
+          width: 95px;
+          height: 100%;
+
+          &-title {
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--pdp-muted-text-color);
+            padding: 0.25rem 0;
+            border-bottom: 1px solid var(--pdp-border-color);
+          }
+
+          .time-list {
+            flex: 1;
+            overflow-y: auto;
+            list-style: none;
+            padding: 0.25rem 0.2rem;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            @include scrollbar;
+
+            li {
+              padding: 0.35rem 0;
+              text-align: center;
+              border-radius: 6px;
+              cursor: pointer;
+              font-size: 0.85rem;
+              font-family: monospace;
+              color: var(--pdp-text-color);
+
+              &:hover:not(.disabled) {
+                background: var(--pdp-surface-hover-color);
+                color: var(--pdp-primary-color);
+              }
+
+              &.selected {
+                background: var(--pdp-primary-color);
+                color: var(--pdp-day-selected-text-color);
+                font-weight: 700;
+              }
+
+              &.disabled {
+                opacity: var(--pdp-disabled-opacity);
+                cursor: not-allowed;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    /* --- FOOTER & COMPACT MULTIPLE BADGE --- */
+    .pdp-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--pdp-border-color);
+      background: var(--pdp-footer-bg);
+      padding-top: 0.5rem;
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      gap: 0.5rem;
+
+      &-info {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+      }
+
+      .pdp-counter-badge {
+        display: inline-block;
+        background: var(--pdp-in-range-background);
+        color: var(--pdp-primary-color);
+        font-weight: 600;
+        padding: 0.15rem 0.5rem;
+        border-radius: 9999px;
+        font-size: 0.78rem;
+      }
+
+      .pdp-date-summary {
+        display: block;
+        color: var(--pdp-muted-text-color);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 220px;
+      }
+
+      &-actions {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+      }
+
+      .pdp-today,
+      .pdp-submit {
+        border: none;
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--pdp-button-radius);
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .pdp-today {
+        background: var(--pdp-today-btn-bg);
+        color: var(--pdp-today-btn-text-color);
+        margin-inline-end: 0.4rem;
+      }
+
+      .pdp-submit {
+        background: var(--pdp-button-bg);
+        color: var(--pdp-button-text-color);
+      }
+    }
+
+    /* --- SHORTCUTS --- */
+    .pdp-shortcut {
+      list-style: none;
+      padding: 0.25rem 0.5rem;
+      margin: 0;
+      margin-inline-start: 0.5rem;
+      border-inline-start: 1px solid var(--pdp-border-color);
+      background: var(--pdp-shortcut-bg);
+      color: var(--pdp-shortcut-text-color);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+
+      li {
+        padding: 0.35rem 0.65rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        cursor: pointer;
+        white-space: nowrap;
+
+        &:hover {
+          background: var(--pdp-in-range-background);
+          color: var(--pdp-primary-color);
+        }
+      }
+    }
+
+    /* --- FLOATING HOVER DAY TOOLTIP --- */
+    .pdp-day-tooltip {
+      margin-bottom: 0.45rem;
+      padding: 0.35rem 0.65rem;
+      background: var(--pdp-surface-color);
+      border: 1px solid var(--pdp-border-color);
+      border-radius: 8px;
+      font-size: 0.74rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+
+      .pdp-tooltip-title {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-weight: 700;
+        color: var(--pdp-text-color);
+
+        .pdp-tooltip-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          flex-shrink: 0;
+        }
+      }
+
+      .pdp-tooltip-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: var(--pdp-muted-text-color);
+        font-size: 0.68rem;
+
+        .pdp-tooltip-badge {
+          color: var(--pdp-badge-color);
+          font-weight: 700;
+        }
+      }
+    }
+
+    /* --- HEATMAP / PRICE-TIER CELL TINTING --- */
+    .pdp-day {
+      &.tier-low:not(.selected):not(.start-range):not(.end-range) {
+        background: rgba(16, 185, 129, 0.12);
+        color: #059669;
+      }
+      &.tier-medium:not(.selected):not(.start-range):not(.end-range) {
+        background: rgba(59, 130, 246, 0.1);
+      }
+      &.tier-high:not(.selected):not(.start-range):not(.end-range) {
+        background: rgba(245, 158, 11, 0.14);
+        color: #d97706;
+      }
+    }
+
+    /* --- iOS SCROLL-SNAP TIME WHEEL & 12H AM/PM --- */
+    .time-wheel {
+      scroll-snap-type: y mandatory;
+      li {
+        scroll-snap-align: center;
+      }
+    }
+
+    .pdp-time-range-tabs {
+      display: flex;
+      gap: 0.25rem;
+      background: var(--pdp-surface-hover-color);
+      padding: 0.2rem;
+      border-radius: 8px;
+      margin-bottom: 0.45rem;
+
+      .pdp-time-range-btn {
+        flex: 1;
+        border: none;
+        background: transparent;
+        color: var(--pdp-muted-text-color);
+        font-size: 0.76rem;
+        font-weight: 600;
+        padding: 0.25rem;
+        border-radius: 6px;
+        cursor: pointer;
+
+        &.active {
+          background: var(--pdp-background);
+          color: var(--pdp-primary-color);
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+        }
+      }
+    }
+
+    .pdp-ampm-box {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      padding: 0.4rem 0.2rem;
+
+      .pdp-ampm-btn {
+        border: 1px solid var(--pdp-border-color);
+        background: var(--pdp-surface-color);
+        color: var(--pdp-text-color);
+        border-radius: 6px;
+        padding: 0.4rem 0;
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+
+        &.selected {
+          background: var(--pdp-primary-color);
+          color: var(--pdp-day-selected-text-color);
+          border-color: var(--pdp-primary-color);
+        }
+      }
+    }
+
+    /* --- IN-POPOVER CALENDAR SWITCHER & FOOTER TOOLS --- */
+    .pdp-cal-switch-btn {
+      background: var(--pdp-surface-hover-color) !important;
+      color: var(--pdp-text-color) !important;
+      font-size: 0.7rem !important;
+      padding: 0.15rem 0.45rem !important;
+    }
+
+    .pdp-relative-info-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--pdp-surface-color);
+      border: 1px solid var(--pdp-border-color);
+      border-radius: 6px;
+      padding: 0.25rem 0.5rem;
+      margin-top: 0.4rem;
+      font-size: 0.74rem;
+      color: var(--pdp-muted-text-color);
+
+      strong {
+        color: var(--pdp-primary-color);
+      }
+    }
+
+    .pdp-summary-row {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+
+      .pdp-copy-btn {
+        border: 1px solid var(--pdp-border-color);
+        background: var(--pdp-surface-color);
+        color: var(--pdp-text-color);
+        border-radius: 5px;
+        font-size: 0.68rem;
+        padding: 0.1rem 0.35rem;
+        cursor: pointer;
+
+        &:hover {
+          border-color: var(--pdp-primary-color);
+          color: var(--pdp-primary-color);
+        }
+      }
+    }
+    /* --- INPUT-LEVEL FORMAL PERSIAN WORDS HINT --- */
+    .pdp-input-words-hint {
+      margin: 0.3rem 0 0 0;
+      font-size: 0.74rem;
+      color: var(--pdp-primary-color);
+      font-weight: 600;
+    }
+
+    /* --- DIRECTIONAL MONTH SLIDE TRANSITIONS --- */
+    .pdp-slide-next-enter-active,
+    .pdp-slide-next-leave-active,
+    .pdp-slide-prev-enter-active,
+    .pdp-slide-prev-leave-active {
+      transition:
+        opacity 0.14s ease,
+        transform 0.14s ease;
+    }
+    .pdp-slide-next-enter-from {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+    .pdp-slide-next-leave-to {
+      opacity: 0;
+      transform: translateX(8px);
+    }
+    .pdp-slide-prev-enter-from {
+      opacity: 0;
+      transform: translateX(8px);
+    }
+    .pdp-slide-prev-leave-to {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+
+    /* --- APPOINTMENT / DELIVERY TIME SLOTS GRID --- */
+    .pdp-time-slots-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+      max-height: 225px;
+      overflow-y: auto;
+      padding: 0.25rem;
+      width: 265px;
+      min-width: 100%;
+      @include scrollbar;
+
+      .pdp-time-slot-card {
+        border: 1.5px solid var(--pdp-border-color);
+        background: var(--pdp-surface-color);
+        color: var(--pdp-text-color);
+        border-radius: 10px;
+        padding: 0.55rem 0.65rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.28rem;
+        cursor: pointer;
+        transition: all 0.15s ease;
+
+        .pdp-slot-label {
+          font-size: 0.8rem;
+          font-weight: 700;
+          color: var(--pdp-text-color);
+        }
+
+        .pdp-slot-badge {
+          font-size: 0.68rem;
+          font-weight: 600;
+          color: var(--pdp-badge-color);
+          background: rgba(16, 185, 129, 0.12);
+          padding: 0.1rem 0.45rem;
+          border-radius: 9999px;
+        }
+
+        &:hover:not(.disabled):not(.selected) {
+          border-color: var(--pdp-primary-color);
+          background: var(--pdp-in-range-background);
+        }
+
+        &.selected {
+          background: var(--pdp-day-selected-bg) !important;
+          border-color: var(--pdp-day-selected-bg) !important;
+          color: var(--pdp-day-selected-text-color) !important;
+          box-shadow: 0 4px 10px -2px var(--pdp-input-focus-ring);
+
+          .pdp-slot-label {
+            color: var(--pdp-day-selected-text-color) !important;
+          }
+
+          .pdp-slot-badge {
+            background: rgba(255, 255, 255, 0.22) !important;
+            color: var(--pdp-day-selected-text-color) !important;
+          }
+        }
+
+        &.disabled {
+          opacity: var(--pdp-disabled-opacity);
+          cursor: not-allowed;
+        }
+
+        .pdp-slot-label {
+          font-size: 0.78rem;
+          font-weight: 700;
+        }
+
+        .pdp-slot-badge {
+          color: var(--pdp-error-color);
+          background: rgba(239, 68, 68, 0.12);
+        }
+      }
+    }
+
+    /* --- FORMAL PERSIAN WORDS BANNER IN FOOTER --- */
+    .pdp-words-banner {
+      background: var(--pdp-in-range-background);
+      color: var(--pdp-primary-color);
+      border-radius: 6px;
+      padding: 0.3rem 0.5rem;
+      margin-top: 0.4rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-align: center;
+      max-width: 265px;
+      min-width: 100%;
+    }
+
+    /* --- HORIZONTAL SHORTCUT CHIPS (TOP / BOTTOM) --- */
+    .pdp-shortcut-chips {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      list-style: none;
+      padding: 0 0 0.45rem 0;
+      margin: 0 0 0.45rem 0;
+      border-bottom: 1px solid var(--pdp-border-color);
+      max-width: 265px;
+      min-width: 100%;
+      overflow-x: auto;
+      @include scrollbar;
+
+      &--bottom {
+        border-bottom: none;
+        border-top: 1px solid var(--pdp-border-color);
+        padding: 0.45rem 0 0 0;
+        margin: 0.45rem 0 0 0;
+      }
+
+      li {
+        background: var(--pdp-surface-color);
+        border: 1px solid var(--pdp-border-color);
+        color: var(--pdp-text-color);
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 0.2rem 0.55rem;
+        border-radius: 9999px;
+        white-space: nowrap;
+        cursor: pointer;
+
+        &:hover {
+          background: var(--pdp-in-range-background);
+          border-color: var(--pdp-primary-color);
+          color: var(--pdp-primary-color);
+        }
+      }
+    }
+
+    /* --- QUICK JUMP BACK BUTTON IN HEADER --- */
+    .pdp-jump-back-btn {
+      background: var(--pdp-in-range-background) !important;
+      color: var(--pdp-primary-color) !important;
+      font-size: 0.8rem !important;
+      padding: 0.1rem 0.4rem !important;
+    }
+  }
+}

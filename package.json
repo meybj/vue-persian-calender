@@ -1,0 +1,94 @@
+{
+  "name": "@meybj/vue-persian-calendar",
+  "description": "Modern Persian (Jalali) and Gregorian DatePicker & Date Engine for Vue 3.4/3.5+ and Nuxt 3/4+",
+  "version": "2.0.0",
+  "author": "meybj",
+  "license": "MIT",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.umd.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.umd.js"
+    },
+    "./style.css": "./dist/style.css",
+    "./nuxt": {
+      "types": "./dist/nuxt/index.d.ts",
+      "import": "./dist/nuxt/index.mjs",
+      "require": "./dist/nuxt/index.cjs"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build:lib": "vite build",
+    "build:nuxt": "unbuild",
+    "build:demo": "vite build --config vite.demo.config.ts",
+    "build": "pnpm build:lib && pnpm build:nuxt",
+    "typecheck": "vue-tsc --noEmit",
+    "lint": "eslint .",
+    "pretty": "prettier -w -u .",
+    "prepublishOnly": "pnpm typecheck && pnpm lint && pnpm build",
+    "release:patch": "npm version patch && git push --follow-tags && pnpm publish --access public",
+    "release:minor": "npm version minor && git push --follow-tags && pnpm publish --access public",
+    "release:major": "npm version major && git push --follow-tags && pnpm publish --access public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/meybj/vue-persian-calendar.git"
+  },
+  "bugs": {
+    "url": "https://github.com/meybj/vue-persian-calendar/issues"
+  },
+  "homepage": "https://github.com/meybj/vue-persian-calendar#readme",
+  "keywords": [
+    "vue",
+    "vue3",
+    "vue 3.5",
+    "nuxt",
+    "nuxt4",
+    "persian",
+    "jalali",
+    "shamsi",
+    "gregorian",
+    "hijri",
+    "datepicker",
+    "persian-datepicker",
+    "jalali-datepicker",
+    "persian-date",
+    "meybj"
+  ],
+  "peerDependencies": {
+    "vue": ">=3.4.0"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@nuxt/kit": "^4.1.2",
+    "@nuxt/schema": "^4.1.2",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "@vue/compiler-sfc": "^3.5.22",
+    "@vue/eslint-config-prettier": "^10.2.0",
+    "@vue/eslint-config-typescript": "^14.6.0",
+    "baseline-browser-mapping": "^2.11.35",
+    "eslint": "^9.36.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-vue": "^10.5.0",
+    "globals": "^17.14.0",
+    "prettier": "^3.6.2",
+    "sass": "^1.93.2",
+    "typescript": "~5.9.2",
+    "typescript-eslint": "^8.44.1",
+    "unbuild": "^3.6.1",
+    "vite": "8.3.3",
+    "vite-plugin-dts": "^4.5.0",
+    "vue": "^3.5.22",
+    "vue-tsc": "^3.0.8"
+  }
+}

@@ -1,0 +1,216 @@
+// Primary Brand Colors
+$primary-color: #2563eb !default;
+$secondary-color: #93c5fd !default;
+$in-range-background: rgba(37, 99, 235, 0.1) !default;
+
+// Core Layout & Surfaces (Light Mode Defaults)
+$radius: 12px !default;
+$text-color: #1e293b !default;
+$muted-text-color: #64748b !default;
+$hover-color: #0f172a !default;
+$background: #ffffff !default;
+$surface-color: #f8fafc !default;
+$surface-hover-color: #f1f5f9 !default;
+$border-color: #e2e8f0 !default;
+$z-index: 1000 !default;
+$disabled-opacity: 0.3 !default;
+$icon-background: #f8fafc !default;
+$clear-background: transparent !default;
+$overlay-color: rgba(15, 23, 42, 0.4) !default;
+$loading-overlay-bg: rgba(255, 255, 255, 0.72) !default;
+$main-box-shadow:
+  0 20px 25px -5px rgba(0, 0, 0, 0.1),
+  0 8px 10px -6px rgba(0, 0, 0, 0.04) !default;
+$day-dimensions: 2.35rem !default;
+$time-scale: 1 !default;
+$scrollbar-thumb-color: #cbd5e1 !default;
+
+// Semantic Status Colors (Holiday, Error, Success, Badge)
+$holiday-color: #e11d48 !default;
+$badge-color: #10b981 !default;
+$error-color: #ef4444 !default;
+$error-bg: #fef2f2 !default;
+$success-color: #10b981 !default;
+
+// Typography
+$font-family: inherit !default;
+$font-size: 0.9rem !default;
+
+// Input Styling
+$input-bg: #ffffff !default;
+$input-height: 44px !default;
+$input-padding: 0.5rem 0.75rem !default;
+$input-border-width: 1px !default;
+$input-hover-border-color: #94a3b8 !default;
+$input-focus-border-color: $primary-color !default;
+$input-focus-ring: rgba(37, 99, 235, 0.15) !default;
+
+// Header (Month/Year navigation)
+$header-bg: transparent !default;
+$header-text-color: $text-color !default;
+
+// Weekdays (Sat, Sun, Mon...)
+$weekday-text-color: #64748b !default;
+$weekday-bg: transparent !default;
+
+// Day Cells
+$day-text-color: $text-color !default;
+$day-hover-bg: #f1f5f9 !default;
+$day-selected-bg: $primary-color !default;
+$day-selected-text-color: #ffffff !default;
+
+// Footer & Buttons
+$footer-bg: transparent !default;
+$button-bg: $primary-color !default;
+$button-text-color: #ffffff !default;
+$button-radius: 8px !default;
+$today-btn-bg: #f1f5f9 !default;
+$today-btn-text-color: #334155 !default;
+
+// Shortcuts Sidebar
+$shortcut-bg: #f8fafc !default;
+$shortcut-text-color: #334155 !default;
+
+// --- Dark Theme Default Variables (Customizable via SCSS or CSS vars) ---
+$dark-background: #0f172a !default;
+$dark-surface-color: #1e293b !default;
+$dark-surface-hover-color: #334155 !default;
+$dark-input-bg: #1e293b !default;
+$dark-text-color: #f8fafc !default;
+$dark-muted-text-color: #94a3b8 !default;
+$dark-border-color: #334155 !default;
+$dark-weekday-text-color: #94a3b8 !default;
+$dark-day-text-color: #f1f5f9 !default;
+$dark-day-hover-bg: #1e293b !default;
+$dark-shortcut-bg: #1e293b !default;
+$dark-shortcut-text-color: #e2e8f0 !default;
+$dark-today-btn-bg: #1e293b !default;
+$dark-today-btn-text-color: #e2e8f0 !default;
+$dark-loading-overlay-bg: rgba(15, 23, 42, 0.75) !default;
+$dark-scrollbar-thumb-color: #475569 !default;
+
+@mixin pdp-dark-tokens {
+  --pdp-background: var(--pdp-dark-background, #{$dark-background});
+  --pdp-surface-color: var(--pdp-dark-surface-color, #{$dark-surface-color});
+  --pdp-surface-hover-color: var(
+    --pdp-dark-surface-hover-color,
+    #{$dark-surface-hover-color}
+  );
+  --pdp-input-bg: var(--pdp-dark-input-bg, #{$dark-input-bg});
+  --pdp-text-color: var(--pdp-dark-text-color, #{$dark-text-color});
+  --pdp-muted-text-color: var(
+    --pdp-dark-muted-text-color,
+    #{$dark-muted-text-color}
+  );
+  --pdp-header-text-color: var(--pdp-dark-text-color, #{$dark-text-color});
+  --pdp-border-color: var(--pdp-dark-border-color, #{$dark-border-color});
+  --pdp-weekday-text-color: var(
+    --pdp-dark-weekday-text-color,
+    #{$dark-weekday-text-color}
+  );
+  --pdp-day-text-color: var(--pdp-dark-day-text-color, #{$dark-day-text-color});
+  --pdp-day-hover-bg: var(--pdp-dark-day-hover-bg, #{$dark-day-hover-bg});
+  --pdp-shortcut-bg: var(--pdp-dark-shortcut-bg, #{$dark-shortcut-bg});
+  --pdp-shortcut-text-color: var(
+    --pdp-dark-shortcut-text-color,
+    #{$dark-shortcut-text-color}
+  );
+  --pdp-today-btn-bg: var(--pdp-dark-today-btn-bg, #{$dark-today-btn-bg});
+  --pdp-today-btn-text-color: var(
+    --pdp-dark-today-btn-text-color,
+    #{$dark-today-btn-text-color}
+  );
+  --pdp-loading-overlay-bg: var(
+    --pdp-dark-loading-overlay-bg,
+    #{$dark-loading-overlay-bg}
+  );
+  --pdp-scrollbar-thumb-color: var(
+    --pdp-dark-scrollbar-thumb-color,
+    #{$dark-scrollbar-thumb-color}
+  );
+}
+
+// Zero-specificity (:where) ensures external CSS classes or inline :styles always win
+:where(.pdp) {
+  --pdp-primary-color: #{$primary-color};
+  --pdp-secondary-color: #{$secondary-color};
+  --pdp-in-range-background: #{$in-range-background};
+  --pdp-radius: #{$radius};
+  --pdp-text-color: #{$text-color};
+  --pdp-muted-text-color: #{$muted-text-color};
+  --pdp-hover-color: #{$hover-color};
+  --pdp-background: #{$background};
+  --pdp-surface-color: #{$surface-color};
+  --pdp-surface-hover-color: #{$surface-hover-color};
+  --pdp-border-color: #{$border-color};
+  --pdp-z-index: #{$z-index};
+  --pdp-disabled-opacity: #{$disabled-opacity};
+  --pdp-icon-background: #{$icon-background};
+  --pdp-clear-background: #{$clear-background};
+  --pdp-overlay-color: #{$overlay-color};
+  --pdp-loading-overlay-bg: #{$loading-overlay-bg};
+  --pdp-main-box-shadow: #{$main-box-shadow};
+  --pdp-day-dimensions: #{$day-dimensions};
+  --pdp-time-scale: #{$time-scale};
+  --pdp-scrollbar-thumb-color: #{$scrollbar-thumb-color};
+
+  // Semantic
+  --pdp-holiday-color: #{$holiday-color};
+  --pdp-badge-color: #{$badge-color};
+  --pdp-error-color: #{$error-color};
+  --pdp-error-bg: #{$error-bg};
+  --pdp-success-color: #{$success-color};
+
+  // Typography
+  --pdp-font-family: #{$font-family};
+  --pdp-font-size: #{$font-size};
+
+  // Input
+  --pdp-input-bg: #{$input-bg};
+  --pdp-input-height: #{$input-height};
+  --pdp-input-padding: #{$input-padding};
+  --pdp-input-border-width: #{$input-border-width};
+  --pdp-input-hover-border-color: #{$input-hover-border-color};
+  --pdp-input-focus-border-color: #{$input-focus-border-color};
+  --pdp-input-focus-ring: #{$input-focus-ring};
+
+  // Header
+  --pdp-header-bg: #{$header-bg};
+  --pdp-header-text-color: #{$header-text-color};
+
+  // Weekdays
+  --pdp-weekday-text-color: #{$weekday-text-color};
+  --pdp-weekday-bg: #{$weekday-bg};
+
+  // Days
+  --pdp-day-text-color: #{$day-text-color};
+  --pdp-day-hover-bg: #{$day-hover-bg};
+  --pdp-day-selected-bg: #{$day-selected-bg};
+  --pdp-day-selected-text-color: #{$day-selected-text-color};
+
+  // Footer & Buttons
+  --pdp-footer-bg: #{$footer-bg};
+  --pdp-button-bg: #{$button-bg};
+  --pdp-button-text-color: #{$button-text-color};
+  --pdp-button-radius: #{$button-radius};
+  --pdp-today-btn-bg: #{$today-btn-bg};
+  --pdp-today-btn-text-color: #{$today-btn-text-color};
+
+  // Shortcuts
+  --pdp-shortcut-bg: #{$shortcut-bg};
+  --pdp-shortcut-text-color: #{$shortcut-text-color};
+}
+
+:where(.pdp.pdp-theme-dark) {
+  @include pdp-dark-tokens;
+}
+
+:where(.pdp.pdp-theme-auto) {
+  @media (prefers-color-scheme: dark) {
+    @include pdp-dark-tokens;
+  }
+}
+
+:where(html.dark .pdp.pdp-theme-auto) {
+  @include pdp-dark-tokens;
+}
