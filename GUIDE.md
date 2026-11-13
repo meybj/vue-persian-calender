@@ -1,34 +1,35 @@
-# Developer & Maintainer Guide
+# Developer & Reference Guide
 
-This guide covers everything you need to use `@meybj/vue-persian-calendar` in an application, customize its theme and behavior, work with the `PersianDate` engine, and build/publish the library + GitHub Pages playground.
+Complete documentation for `@meybj/vue-persian-calender` — component API, presets, theming tokens, `PersianDate` format tokens, and troubleshooting.
+
+Live examples: [Playground](https://meybj.github.io/vue-persian-calender/)
 
 ---
 
 ## Table of Contents
 
-1. [Installation & Setup](#1-installation--setup)
+1. [Installation & Nuxt Setup](#1-installation--nuxt-setup)
 2. [Props Reference](#2-props-reference)
 3. [Events, Slots & Exposed Methods](#3-events-slots--exposed-methods)
-4. [Preset Composables](#4-preset-composables)
+4. [Preset Composables & Async Fetching](#4-preset-composables--async-fetching)
 5. [Theming & CSS Custom Properties](#5-theming--css-custom-properties)
-6. [Working with `PersianDate`](#6-working-with-persiandate)
+6. [Working with `PersianDate` & Format Tokens](#6-working-with-persiandate--format-tokens)
 7. [Keyboard Navigation & Smart Paste](#7-keyboard-navigation--smart-paste)
+8. [Troubleshooting](#8-troubleshooting)
 
 ---
 
-## 1. Installation & Setup
+## 1. Installation & Nuxt Setup
 
 ### Vue 3 (Vite / SPA)
 
 ```bash
-pnpm add @meybj/vue-persian-calendar
+pnpm add @meybj/vue-persian-calender
 ```
 
-Import the component and stylesheet where you need it (or register it once globally):
-
 ```ts
-import { DatePicker } from '@meybj/vue-persian-calendar';
-import '@meybj/vue-persian-calendar/style.css';
+import { DatePicker } from '@meybj/vue-persian-calender';
+import '@meybj/vue-persian-calender/style.css';
 ```
 
 ### Nuxt 3 / 4
@@ -36,13 +37,24 @@ import '@meybj/vue-persian-calendar/style.css';
 ```ts
 // nuxt.config.ts
 export default defineNuxtConfig({
-  modules: ['@meybj/vue-persian-calendar/nuxt'],
-  css: ['@meybj/vue-persian-calendar/style.css'],
+  modules: ['@meybj/vue-persian-calender/nuxt'],
   datepicker: {
-    componentName: 'DatePicker', // change if it collides with another component
+    componentName: 'DatePicker', // rename if it collides with another component
     composable: true, // auto-imports usePersianDate()
   },
 });
+```
+
+The Nuxt module pushes `@meybj/vue-persian-calender/style.css` automatically, registers `<DatePicker />`, and exposes `usePersianDate()`:
+
+```vue
+<script setup lang="ts">
+const today = usePersianDate().toString('?YYYY/?MM/?DD');
+</script>
+
+<template>
+  <DatePicker :model-value="today" persian-digits />
+</template>
 ```
 
 ---
@@ -60,13 +72,13 @@ export default defineNuxtConfig({
 | `modelType`     | `'format' \| 'iso' \| 'unix' \| 'date'`                               | `'format'`                       | How selected values are serialized into `v-model`.                                                  |
 | `timezone`      | `string`                                                              | `undefined`                      | Pass `'Asia/Tehran'` or `'+03:30'` when `modelType="iso"` to emit Tehran offset instead of UTC `Z`. |
 | `format`        | `string`                                                              | auto by `type`                   | Model string format (e.g. `'YYYY-MM-DD'`, `'?YYYY/?MM/?DD'`).                                       |
-| `inputFormat`   | `string`                                                              | auto by `type`                   | Format displayed in the text input.                                                                 |
+| `inputFormat`   | `string`                                                              | auto by `type`                   | Format displayed in the text input (used when segmented mode is inactive).                          |
 | `displayFormat` | `string`                                                              | auto by `type`                   | Format shown in the footer summary and multiple-selection chips.                                    |
 | `from`          | `string`                                                              | `'1300'` (or `''` for time)      | Lower selectable bound.                                                                             |
 | `to`            | `string`                                                              | `'1499'` (or `'23:59'` for time) | Upper selectable bound.                                                                             |
 | `initialValue`  | `string`                                                              | today                            | Starting month/year when `v-model` is empty.                                                        |
 | `disable`       | `string \| RegExp \| Array \| (date: PersianDate) => boolean`         | `undefined`                      | Disables matching dates or dates where the callback returns `true`.                                 |
-| `altName`       | `string`                                                              | `''`                             | Renders a hidden `<input>` for standard HTML form submits (use `'dates[]'` for array fields).       |
+| `altName`       | `string`                                                              | `''`                             | Renders a hidden `<input>` for native HTML form submits (use `'dates[]'` for array fields).         |
 
 ### Behavior & Interaction
 
@@ -126,17 +138,17 @@ export default defineNuxtConfig({
 
 ### Styling & Form States
 
-| Prop                                                  | Type                                                                     | Default     | Description                                                                                   |
-| :---------------------------------------------------- | :----------------------------------------------------------------------- | :---------- | :-------------------------------------------------------------------------------------------- |
-| `color`                                               | `'blue' \| 'red' \| 'pink' \| 'orange' \| 'green' \| 'purple' \| 'gray'` | `'blue'`    | Accent color preset.                                                                          |
-| `theme`                                               | `'light' \| 'dark' \| 'auto'`                                            | `'light'`   | Theme mode (`'auto'` tracks `prefers-color-scheme: dark` and `html.dark`).                    |
-| `styles`                                              | `Styles`                                                                 | `{}`        | CSS variable overrides (see Section 5).                                                       |
-| `ui`                                                  | `UIClasses`                                                              | `{}`        | Extra class names for `root`, `group`, `input`, `picker`, `day`, `footer`.                    |
-| `state`                                               | `'default' \| 'error' \| 'success'`                                      | `'default'` | Validation border/ring state.                                                                 |
-| `errorMessage`                                        | `string`                                                                 | `''`        | Displays error text beneath the input and activates error state.                              |
-| `loading`                                             | `boolean`                                                                | `false`     | Displays a spinner overlay over the calendar body.                                            |
-| `label`                                               | `string`                                                                 | `undefined` | Label element rendered above the input.                                                       |
-| `placeholder` / `placeholderStart` / `placeholderEnd` | `string`                                                                 | format mask | Input placeholders (note: segmented mode shows per-part placeholders like `سال / ماه / روز`). |
+| Prop                                                  | Type                                                                     | Default     | Description                                                               |
+| :---------------------------------------------------- | :----------------------------------------------------------------------- | :---------- | :------------------------------------------------------------------------ |
+| `color`                                               | `'blue' \| 'red' \| 'pink' \| 'orange' \| 'green' \| 'purple' \| 'gray'` | `'blue'`    | Accent color preset.                                                      |
+| `theme`                                               | `'light' \| 'dark' \| 'auto'`                                            | `'light'`   | Theme mode (`'auto'` tracks `prefers-color-scheme: dark` and `html.dark`).|
+| `styles`                                              | `Styles`                                                                 | `{}`        | CSS variable overrides (see Section 5).                                   |
+| `ui`                                                  | `UIClasses`                                                              | `{}`        | Extra class names for `root`, `group`, `input`, `picker`, `day`, `footer`.|
+| `state`                                               | `'default' \| 'error' \| 'success'`                                      | `'default'` | Validation border/ring state.                                             |
+| `errorMessage`                                        | `string`                                                                 | `''`        | Displays error text beneath the input and activates error state.          |
+| `loading`                                             | `boolean`                                                                | `false`     | Displays a spinner overlay over the calendar body.                        |
+| `label`                                               | `string`                                                                 | `undefined` | Label element rendered above the input.                                   |
+| `placeholder` / `placeholderStart` / `placeholderEnd` | `string`                                                                 | format mask | Input placeholder when using the standard text `<input>` (`range`/`multiple`/readonly). |
 
 ---
 
@@ -144,13 +156,15 @@ export default defineNuxtConfig({
 
 ### Events
 
-- `@open` — emitted when the popover opens.
-- `@close` — emitted when the popover closes.
-- `@select` `(date: PersianDate)` — emitted whenever a day is clicked.
-- `@submit` `(date: PersianDate | PersianDate[] | undefined)` — emitted when selection is committed.
-- `@clear` — emitted when cleared via button or `.clear()`.
-- `@month-change` `(payload: MonthChangePayload)` — emitted when navigating to a different month/year; pair with `:loading="true"` to fetch availability/prices from an API.
-- `@invalid-date` `(rawValue: string)` — emitted when manual typing/pasting fails date validation or `disable` rules.
+| Event           | Payload                                      | Description                                                                        |
+| :-------------- | :------------------------------------------- | :--------------------------------------------------------------------------------- |
+| `@open`         | —                                            | Emitted when the popover opens.                                                    |
+| `@close`        | —                                            | Emitted when the popover closes.                                                   |
+| `@select`       | `date: PersianDate`                          | Emitted whenever a day cell is selected.                                           |
+| `@submit`       | `date: PersianDate \| PersianDate[] \| undefined` | Emitted when the selection is committed.                                      |
+| `@clear`        | —                                            | Emitted when cleared via the clear button or `.clear()`.                           |
+| `@month-change` | `payload: MonthChangePayload`                | Emitted when navigating to another month/year; pair with `:loading` for API calls. |
+| `@invalid-date` | `rawValue: string`                           | Emitted when manual input or clipboard paste fails validation or `disable` rules.  |
 
 ### Slots
 
@@ -165,7 +179,7 @@ export default defineNuxtConfig({
 | `#day-sub`                     | `{ day: DayInfo, date?: PersianDate }`                      | Custom sub-label/badge under the day number.                    |
 | `#range-duration`              | `{ days, nights, workingDays, start, end, isValid, label }` | Custom range duration pill markup.                              |
 | `#shortcut`                    | `{ label: string, dates: PersianDate[] }`                   | Custom shortcut item label.                                     |
-| `#footer`                      | `{ selectedDates: PersianDate[] }`                          | Custom footer summary area on the left/right of action buttons. |
+| `#footer`                      | `{ selectedDates: PersianDate[] }`                          | Custom footer summary area next to action buttons.              |
 
 ### Template Ref Methods (`defineExpose`)
 
@@ -180,25 +194,63 @@ pickerRef.value?.goToToday();
 
 ---
 
-## 4. Preset Composables
+## 4. Preset Composables & Async Fetching
+
+### Built-in Presets
 
 ```ts
 import {
   useBookingShortcuts,
   useAccountingShortcuts,
   useBirthdateConfig,
-} from '@meybj/vue-persian-calendar';
+} from '@meybj/vue-persian-calender';
 
 const booking = useBookingShortcuts(true); // Today, Tomorrow, This Weekend, Next Week
 const accounting = useAccountingShortcuts(true); // This Month, Last Month, Current Quarter, Fiscal Year
-const birthProps = useBirthdateConfig(); // v-bind="birthProps"
+const birthProps = useBirthdateConfig(); // Ready to spread: v-bind="birthProps"
+```
+
+### Fetching Month Prices / Availability (`@month-change` + `:loading`)
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue';
+import {
+  DatePicker,
+  type CalendarEvent,
+  type MonthChangePayload,
+} from '@meybj/vue-persian-calender';
+
+const date = ref('');
+const loading = ref(false);
+const events = ref<CalendarEvent[]>([]);
+
+async function onMonthChange({ year, month }: MonthChangePayload) {
+  loading.value = true;
+  try {
+    const res = await fetch(`/api/availability?year=${year}&month=${month}`);
+    events.value = await res.json();
+  } finally {
+    loading.value = false;
+  }
+}
+</script>
+
+<template>
+  <DatePicker
+    v-model="date"
+    :events="events"
+    :loading="loading"
+    @month-change="onMonthChange"
+  />
+</template>
 ```
 
 ---
 
 ## 5. Theming & CSS Custom Properties
 
-All built-in styles use `:where(...)` so any CSS variable override or `:styles` prop wins automatically without needing `!important`.
+All built-in styles use `:where(...)`, so any CSS variable override or `:styles` prop wins automatically without `!important`.
 
 Pass tokens via `:styles` (without the `--pdp-` prefix):
 
@@ -232,26 +284,58 @@ Available tokens: `primary-color`, `secondary-color`, `in-range-background`, `ra
 
 ---
 
-## 6. Working with `PersianDate`
+## 6. Working with `PersianDate` & Format Tokens
+
+### Common Methods
 
 - **Construction:** `new PersianDate()`, `new PersianDate('1403/06/15', 'jalali')`, `new PersianDate(new Date())`
 - **Calendar conversion:** `d.calendar('gregorian')` / `d.calendar('jalali')`
 - **Arithmetic:** `addYear`, `subYear`, `addMonth`, `subMonth`, `addQuarter`, `subQuarter`, `addWeek`, `subWeek`, `addDay`, `subDay`, `addHour`, `subHour`, `addMinute`, `subMinute`, `addSecond`, `subSecond`
 - **Boundaries:** `startOf('year' | 'quarter' | 'month' | 'week' | 'date' | 'hour' | 'minute')`, `endOf(...)`
 - **Comparisons:** `isSame`, `isBefore`, `isAfter`, `isSameOrBefore`, `isSameOrAfter`, `isBetween`, `isInArray`, `isLeapYear`
-- **Formatting:**
-  - `toString('?YYYY/?MM/?DD')` (`?` maps to `j` in Jalali and empty in Gregorian)
-  - `toVerbalString(hasTime)` -> `'پنجشنبه ۱۵ شهریور ۱۴۰۳'`
-  - `toPersianWords()` -> `'پانزدهم شهریور ماه یک هزار و چهارصد و سه هجری شمسی'`
-  - `diffDetailed()` -> `{ years, months, days, totalDays, isPast, isToday, humanFa, humanEn }`
-  - `diffForHumans()` -> `'۲ روز پیش'`
+- **Readable outputs:**
+  - `toVerbalString(hasTime)` → `'پنجشنبه ۱۵ شهریور ۱۴۰۳'`
+  - `toPersianWords()` → `'پانزدهم شهریور ماه یک هزار و چهارصد و سه هجری شمسی'`
+  - `diffDetailed()` → `{ years, months, days, totalDays, isPast, isToday, humanFa, humanEn }`
+  - `diffForHumans()` → `'۲ روز پیش'`
+
+### Format Tokens
+
+Prefix a token with `?` to follow the active calendar (`?YYYY` → `jYYYY` in Jalali, `YYYY` in Gregorian). Wrap literal text in backticks `` `...` ``.
+
+| Token                  | Example (Jalali) | Example (Gregorian) | Description                       |
+| :--------------------- | :--------------- | :------------------ | :-------------------------------- |
+| `YYYY` / `YY`          | `1403` / `03`    | `2024` / `24`       | 4-digit or 2-digit year           |
+| `MMMM` / `MMM`         | `شهریور`         | `September` / `Sep` | Full or short month name          |
+| `MM` / `M`             | `06` / `6`       | `09` / `9`          | Zero-padded or plain month number |
+| `DD` / `D`             | `15` / `15`      | `05` / `5`          | Zero-padded or plain day of month |
+| `Do`                   | `پانزدهم`        | `5th`               | Ordinal day of month              |
+| `dddd` / `dd`          | `پنجشنبه` / `پ`  | `Thursday` / `Th`   | Weekday name or short label       |
+| `Q` / `Qo`             | `2` / `دوم`      | `3` / `3rd`         | Quarter                           |
+| `ww` / `w`             | `24` / `24`      | `36` / `36`         | Week of year                      |
+| `HH` / `hh`            | `14` / `02`      | `14` / `02`         | 24-hour or 12-hour                |
+| `mm` / `ss`            | `30` / `45`      | `30` / `45`         | Minutes and seconds               |
+| `jaa` / `A`            | `ب.ظ`            | `PM`                | Meridiem indicator                |
+| `t`                    | `1725534000000`  | `1725534000000`     | Unix timestamp (ms)               |
+| `` `ساعت` HH:mm ``     | `ساعت 14:30`     | `ساعت 14:30`        | Literal text inside backticks     |
 
 ---
 
 ## 7. Keyboard Navigation & Smart Paste
 
-- **Segmented input:** Type numbers directly into `Year / Month / Day`. Focus advances automatically when a segment is complete. Use `ArrowLeft`/`ArrowRight` (or `/`, `-`, `:`) to switch segments, and `ArrowUp`/`ArrowDown` (or mouse wheel while hovering the focused segment) to step values while skipping disabled dates.
-- **Calendar grid:** `Arrow` keys move day-by-day (automatically skipping disabled dates), `PageUp`/`PageDown` move months (hold `Shift` for years), `Home`/`End` jump to month start/end, `Enter`/`Space` selects, `Escape` closes.
-- **Smart paste:** Pressing `Ctrl+V` / `Cmd+V` accepts `1403/06/15`, `۱۴۰۳-۰۹-۲۵`, `2025-11-20` (automatically converted to Jalali), 8-digit compact strings (`14030812`), ISO 8601 strings, Unix timestamps, or range pairs (`1403/06/01 - 1403/06/10`).
+- **Segmented input:** Type numbers directly into `Year / Month / Day`. Focus advances automatically once a segment is complete. Use `ArrowLeft`/`ArrowRight` (or `/`, `-`, `:`) to jump between segments, and `ArrowUp`/`ArrowDown` (or mouse wheel while hovering the focused segment) to step values while skipping disabled dates.
+- **Calendar grid:** `Arrow` keys move day-by-day (skipping disabled dates), `PageUp`/`PageDown` move months (hold `Shift` for years), `Home`/`End` jump to month start/end, `Enter`/`Space` selects, `Escape` closes.
+- **Smart paste:** `Ctrl+V` / `Cmd+V` accepts `1403/06/15`, `۱۴۰۳-۰۹-۲۵`, `2025-11-20` (converted to Jalali automatically), compact 8-digit strings (`14030812`), ISO 8601 strings, Unix timestamps, and range pairs (`1403/06/01 - 1403/06/10`).
+
+---
+
+## 8. Troubleshooting
+
+- **Calendar popover is clipped inside a modal/card (`overflow: hidden`):**
+  Add `:teleport="true"` (or `:teleport="'#app'"`).
+- **Placeholder prop doesn't show in single-date mode:**
+  When `editable` is `true` in `single` mode (or `dualInput` is `true`), the component renders the interactive segmented input (`سال / ماه / روز` or `YYYY / MM / DD`). Set `:editable="false"` if you want a plain text `<input>` showing `placeholder`.
+- **Styles look overridden or unstyled:**
+  Make sure `@meybj/vue-persian-calender/style.css` is imported once in your app entry (the Nuxt module imports it for you automatically).
 
 ---
