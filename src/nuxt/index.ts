@@ -19,7 +19,7 @@ export interface DatePickerNuxtOptions {
 
 export default defineNuxtModule<DatePickerNuxtOptions>({
   meta: {
-    name: '@meybj/vue-persian-calendar',
+    name: '@meybj/vue-persian-calender',
     configKey: 'datepicker',
     compatibility: {
       nuxt: '>=3.0.0',
@@ -30,7 +30,7 @@ export default defineNuxtModule<DatePickerNuxtOptions>({
     componentName: 'DatePicker',
   },
   setup(options, nuxt) {
-    const pkgName = '@meybj/vue-persian-calendar';
+    const pkgName = '@meybj/vue-persian-calender';
 
     if (!nuxt.options.css.includes(`${pkgName}/style.css`)) {
       nuxt.options.css.push(`${pkgName}/style.css`);

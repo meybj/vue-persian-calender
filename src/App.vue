@@ -220,7 +220,7 @@
       <div class="pg-header-inner">
         <div>
           <span class="pg-version">v{{ pkg.version }}</span>
-          <h1 class="pg-title">vue-persian-calendar Playground</h1>
+          <h1 class="pg-title">vue-persian-calender Playground</h1>
           <p class="pg-subtitle">
             Component &amp; PersianDate test suite for Vue 3 and Nuxt.
           </p>
